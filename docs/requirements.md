@@ -12,4 +12,8 @@
 
 - Set CI-CD with github actions
 - Use TDD for development
-- Build a Django Web app
+- Build backend API with Django Rest Framework and frontend with Reactjs
+- Build a desktop and mobile app client using Kivy MD
+- Backend and Front end hosted on AWS
+- Track progress using todo-app PERN locally.
+- Release APIs for the MVP by December ending.
