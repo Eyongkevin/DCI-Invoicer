@@ -1,5 +1,25 @@
 ### Acceptance Test Cases
 
+This application should enable the admin to partially create accounts for freelancers and freelancers should be able to upload spreadsheets containing the task and generate the invoice. This invoice should then be downloaded.
+
+### Flow
+
+- Admin partially create freelancer and hand over the username and password to the freelancer
+- Freelancer signs in and first thing to do are;
+  - update password if need be
+  - fill in information for the;
+    - profile
+    - address
+    - company
+    - assignment
+- Freelancer can upload spreadsheet containing tasks in a specific format, then
+  - provide a few information about the invoice
+  - generate invoice
+  - view invoice if need be
+  - delete invoice if need be
+  - download invoice
+- Freelancer invoice is deleted after downloaded or it will be auto-deleted after 24 hours if the freelancer had not downloaded.
+
 #### Admin - Create freelancer's IAM account
 
 - Given that a user is not registered

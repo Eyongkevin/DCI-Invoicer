@@ -1,0 +1,1284 @@
+openapi: 3.0.3
+info:
+  title: DCI Invoicer
+  version: "0.1"
+  description: |
+    This application should enable the admin to partially create accounts for freelancers 
+    and freelancers should be able to upload spreadsheets containing the tasks and generate the invoice. 
+    This invoice should then be downloaded.
+    
+    # Flow
+    - Get registered by an admin
+    - Sign in with your credentials
+    - Upload a spreadsheet containing the tasks in the format used by DCI
+    - Generate an invoice from the uploaded spreadsheet
+
+  contact:
+    name: Eyong Kevin
+    email: tonyparkerkenz@gmail.com
+    url: https://www.linkedin.com/in/eyong-enowanyo/
+  license:
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+    name: Apache 2.0
+    
+tags:
+  - name: Auth
+    description: Authentication and Authorization
+  - name: Admin
+    description: Admin operations
+  - name: User
+    description: User operations
+  - name: Invoice
+    description: User's operations on Invoice 
+  
+paths: 
+  # AUTH
+  
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      security:
+        - token: []
+      summary: Register IAM User
+      description: |
+        Only an admin should be able to register a  freelancer as a user or another admin
+      requestBody:
+        description: IAM user details
+        content:
+          application/json:
+            example:
+                username: kevin
+                password: kevin@2023
+                cpassword: kevin@2023
+                email: kevin.kenz-freelancer@digitalcareerinstitute.org
+                role: user
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+      responses:
+        201:
+          description: Created
+          # headers:
+          #   Location:
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLoginDetail'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Token403'
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login User
+      description: |
+        Login and obtain an access and refresh token
+      requestBody:
+        description: Login credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginDetail'
+      responses:
+        201:
+          description: Access and refresh token created for accessing resources.
+          # headers:
+          #   Location:
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLoginResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Login403'
+  /auth/refresh-token:
+    post:
+      tags:
+        - Auth
+      summary: Refresh token
+      description: |
+        Refresh login token 
+      requestBody:
+        description: Refresh token
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh:
+                  type: string
+                  pattern: '[a-zA-Z0-9.\-]{200}'
+      responses:
+        201:
+          description: Created
+          # headers:
+          #   Location:
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRefreshTokenResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+  
+  # ADMIN
+  /users:
+    get:
+      tags:
+        - Admin
+      security:
+        - token: []
+      summary: Fetch Users
+      description: |
+        Fetch all freelancers with or without filters
+      parameters:
+      - name: role
+        description: Filter freelancers by role; superuser, admin, user
+        in: query
+        schema:
+          type: string
+          pattern: '(admin)|(user)'
+          example: admin
+      - name: status
+        description: Filter freelancer by status; active, inactive
+        in: query
+        schema:
+          type: string
+          pattern: '(active)|(inactive)'
+          example: active
+      responses:
+        200:
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+              # schema:
+              #   type: object
+              #   properties:
+              #     users:
+              #       type: array
+              #       items:
+              #         $ref: '#/components/schemas/User'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Token403'
+         
+  /users/{id}:
+    get:
+      tags:
+        - Admin
+      security: 
+        - token: []
+      summary: Fetch a single user
+      description: Fetch a single freelancer
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 20
+      responses:
+        200:
+          description: Successful
+          content:  
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User404'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Token403'
+    put:
+      tags:
+        - Admin
+      security:
+        - token: []
+      summary: Update User
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 20
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+          
+      responses:  
+        200:  
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User404'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Token403'
+        
+    delete:
+      tags:
+        - Admin
+      security:
+        - token: []
+      summary: Delete User
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 20
+      responses:  
+        204:  
+          description: No Content
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User404'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Token403'
+          
+  /users/{id}/activate:
+    put:
+      tags:
+        - Admin
+      security:
+        - token: []
+      summary: Activate User
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 20
+      responses:  
+        200:  
+          description: Successfully activated user
+          content:  
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Freelancer Activated Successfully
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User404'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Token403'
+    
+  /users/{id}/deactivate:
+    put:
+      tags:
+        - Admin
+      security:
+        - token: []
+      summary: Deactivate User
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 20
+      responses:  
+        200:  
+          description: Successful
+          content:  
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Freelancer Deactivated Successfully
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User404'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Token403'
+                
+  /users/{id}/reset-pwd:
+    put:
+      tags:
+        - Admin
+      security:
+        - token: []
+      summary: Reset User password
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 20
+      requestBody:
+        description: new password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPassword'
+      responses:  
+        200:  
+          description: Successful reset password. 
+          content:  
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Freelancer password reset Successfully
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User404'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Token403'
+  
+  # USER
+  /users/profile:
+    get:
+      tags:
+        - User
+      security:
+        - token: []
+      summary: Get Profile
+      responses:  
+        200:  
+          description: Successful 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+            
+    put:
+      tags:
+        - User
+      summary: Update Profile
+      requestBody:
+        description: Profile details 
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileRequest'
+      responses:  
+        200:  
+          description: Successful 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+  
+  /users/address:
+    get:
+      tags:
+        - User
+      summary: Get Address
+      responses:  
+        200:  
+          description: Successful 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+    put:
+      tags:
+        - User
+      summary: Update Address
+      requestBody:
+        description: Address details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAddress'
+      responses:  
+        200:  
+          description: Successful  
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+          
+  /users/company:
+    get:
+      tags:
+        - User
+      summary: Get Company Details
+      responses:  
+        200:  
+          description: Successful 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+    put:
+      tags:
+        - User
+      summary: Update Company Details
+      requestBody:
+        description: Company details
+        content:
+          application/json:   
+            schema:
+              $ref: '#/components/schemas/UpdateCompany'
+      responses:  
+        200:  
+          description: Successful 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+          
+  /users/assignment:
+    get:
+      tags:
+        - User
+      summary: Get Assignment Details
+      responses:  
+        200:  
+          description: Successful 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+    put:
+      tags:
+        - User
+      summary: Update Assignment Details
+      requestBody:
+        description: Assignment details
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateAssignment'
+      responses:  
+        200:  
+          description: Successful 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+  
+  /users/reset-pwd:
+    put:
+      tags:
+        - User
+      summary: Reset password
+      requestBody:
+        description: New password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPassword'
+      responses:  
+        302:  
+          description: Successful reset password. Redirect to login  
+          content:  
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Freelancer password reset Successfully
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+          
+  /users/upload:
+    post:
+      tags:
+        - User
+      summary: Upload spreadsheet
+      requestBody:
+        content:
+          application/vnd.ms-excel:
+            schema:
+              type: string
+              format: binary
+      responses:  
+        200:  
+          description: Successful 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: File too large
+                  code:
+                    type: string
+                    example: file_too_large
+        415:
+          description: Unsupported Media Type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: File is not of allowed type
+                  code:
+                    type: string
+                    example: file_not_allowed_type
+    
+  /users/generate:
+    post:
+      tags:
+        - User
+      summary: Generate invoice pdf
+      description: Generate invoice pdf from uploaded spreadsheet
+      requestBody:
+        description: uploaded file id from s3
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                s3_id:
+                  type: string
+                  example: s3-4838skskhghls-3llshglslhe
+      responses:  
+        200:  
+          description: Successful 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: File too large
+                  code:
+                    type: string
+                    example: file_too_large
+        415:
+          description: Unsupported Media Type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: File is not of allowed type
+                  code:
+                    type: string
+                    example: file_not_allowed_type
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: File Not Found in source
+                  code:
+                    type: string
+                    example: file_not_found
+   
+  /invoice:
+    get:
+      tags:
+        - Invoice
+      summary: Get Invoices
+      description: Get all invoices that were generated and still in the database
+      responses:  
+        200:  
+          description: Successful 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invoice'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+          
+  /invoice/{s3_invoice_id}:
+    get:
+      tags:
+        - Invoice
+      summary: View invoice
+      description: View an invoice that was generated
+      parameters:
+      - name: s3_invoice_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 20
+      responses:  
+        200:  
+          description: Successful 
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: File Not Found in source
+                  code:
+                    type: string
+                    example: file_not_found
+          
+    delete:
+      tags:
+        - Invoice
+      summary: Delete invoice
+      description: Manually delete an invoice
+      parameters:
+      - name: s3_invoice_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 20
+      responses:  
+        204:  
+          description: Deleted 
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: File Not Found in source
+                  code:
+                    type: string
+                    example: file_not_found
+          
+  /invoice/{s3_invoice_id}/download:
+    get:
+      tags:
+        - Invoice
+      summary: Download invoice
+      description: Download a generated invoice
+      parameters:
+      - name: s3_invoice_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 20
+      responses:  
+        200:  
+          description: Successful 
+          content:  
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Invoice downloaded successfully
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token401'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: File Not Found in source
+                  code:
+                    type: string
+                    example: file_not_found
+components:
+  schemas: 
+    User:
+      type: object
+      example:
+        id: 20
+        username: kevin
+        email: kevin.kenz-freelancer@digitalcareerinstitute.org
+        role: user
+        status: active
+        created_at: '2023-11-15 13:07:32.418457+01'
+        modified_at: '2023-11-15 13:07:32.418457+01'
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+          pattern: '[a-zA-Z0-9.\-]{4,15}-freelancer@digitalcareerinstitute\.org'
+        role: 
+          type: string
+          pattern: '(superuser)|(admin)|(user)'
+        status:
+          type: string
+          pattern: '(active)|(inactive)'
+        created_at:
+          type: string
+        modified_at:
+          type: string
+    UserRegister:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        cpassword:
+          type: string
+        email:
+          type: string
+          pattern: '[a-zA-Z0-9.\-]{4,15}-freelancer@digitalcareerinstitute\.org'
+        role:
+          type: string
+          pattern: '(admin)|(user)'
+    UserLoginDetail:
+      type: object
+      example:
+          username: kevin
+          password: kevin@2023
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        
+    UserLoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          pattern: '[a-zA-Z0-9.\-]{200}'
+        refresh:
+          type: string
+          pattern: '[a-zA-Z0-9.\-]{200}'
+    UserRefreshTokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          pattern: '[a-zA-Z0-9.\-]{200}'
+    UpdateUser:
+      type: object
+      example:
+        username: kevin
+        email: kevin.kenz-freelancer@digitalcareerinstitute.org
+        role: user
+      properties:
+        username: 
+          type: string
+        email:  
+          type: string
+          pattern: '[a-zA-Z0-9.\-]{4,15}-freelancer@digitalcareerinstitute\.org'
+        role:
+          type: string
+          pattern: '(admin)|(user)'
+        
+    ProfileObj:
+      type: object
+      example:
+        tax_number: P079017863310R
+        po_number: PO-598
+        vat_id: null
+        bank_name: UBA Cameroon SA
+        iban: 'CM21 10033 05212 12002006853 24'
+        swift_bic: UNAFCMCX
+        first_name: kevin Enowanyo
+        last_name: Eyong
+        transfer_deadline_day: 16
+        
+      properties:
+        id:
+          type: integer
+        tax_number:
+          type: string
+        po_number: 
+          type: string
+        vat_id:
+          type: string
+          nullable: true
+        bank_name:
+          type: string
+        iban:
+          type: string
+        swift_bic:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        transfer_deadline_day:
+          type: integer
+        created_at:
+          type: string
+        modified_at:
+          type: string
+    
+    ProfileResponse:
+      allOf:
+        - type: object
+          example:
+            id: 20
+            created_at: '2023-11-15 13:07:32.418457+01'
+            modified_at: '2023-11-15 13:07:32.418457+01'
+          properties:
+            id:
+              type: string
+            created_at:
+              type: string
+            modified_at:
+              type: string
+        - $ref: '#/components/schemas/ProfileObj'
+      
+    ProfileRequest:
+      allOf:
+        - $ref: '#/components/schemas/ProfileObj'
+
+    Address:
+      type: object
+      example:
+        id: 20
+        po_box: '00000'
+        city: Yaounde
+        country: Cameroon
+        address: Biyem-Assi Junction
+        created_at: '2023-11-15 13:07:32.418457+01'
+        modified_at: '2023-11-15 13:07:32.418457+01'
+      properties:
+        id: 
+          type: integer
+        po_box:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        address:  
+          type: string
+        created_at:
+          type: string
+        modified_at:
+          type: string
+          
+    UpdateAddress:
+      type: object
+      example:
+        po_box: '00000'
+        city: Yaounde
+        country: Cameroon
+        address: Biyem-Assi Junction
+      properties:
+        po_box:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        address:  
+          type: string
+    Company:
+      type: object
+      example:
+        id: 20
+        name: DCI-Digital Career Institute GmbH
+        address_1: Vulkanstr. 1
+        address_2: 10367 Berlin
+        created_at: '2023-11-15 13:07:32.418457+01'
+        modified_at: '2023-11-15 13:07:32.418457+01'
+      properties:
+        id: 
+          type: integer
+        name:
+          type: string
+        address_1:
+          type: string
+        address_2:
+          type: string
+        created_at:
+          type: string
+        modified_at:
+          type: string
+    UpdateCompany:
+      type: object
+      example:
+        name: DCI-Digital Career Institute GmbH
+        address_1: Vulkanstr. 1
+        address_2: 10367 Berlin
+      properties:
+        name:
+          type: string
+        address_1:
+          type: string
+        address_2:
+          type: string
+    Assignment:
+      type: object
+      example:
+        id: 30
+        signed_agreement: 2023-11-15
+        end_date: 2024-11-15
+        created_at: '2023-11-15 13:07:32.418457+01'
+        modified_at: '2023-11-15 13:07:32.418457+01'
+      properties:
+        id: 
+          type: integer
+        signed_agreement:
+          type: string
+        end_date:
+          type: string
+        created_at:
+          type: string
+        modified_at:
+          type: string
+    UpdateAssignment:
+      type: object
+      example:
+        signed_agreement: 2023-11-15
+        end_date: 2024-11-15
+      properties:
+        signed_agreement:
+          type: string
+        end_date:
+          type: string
+    Deactivate:
+      type: object
+      properties:
+        id: 
+          type: integer
+        user_id: 
+          type: integer
+        date_time:
+          type: string
+        reason:
+          type: string
+        created_at:
+          type: string
+    Upload:
+      type: object
+      example:
+        id: 45
+        s3_id: s3-4838skskhghls-3llshglslhe
+        name: p23_eo3_jan_tasks
+        size: 1200
+        s3_invoice_id: null
+      properties:
+        id: 
+          type: integer
+        s3_id:
+          type: string
+        name: 
+          type: string
+        size: 
+          type: integer
+        s3_invoice_id:
+          type: string
+          nullable: true
+          
+    Invoice:
+      allOf:
+        - $ref: '#/components/schemas/Upload'
+        - type: object
+          example:
+            s3_invoice_id: s3-4838skskhghls-3ll998skskhghls838-33kls
+    ResetPassword:
+      type: object
+      properties:
+        new_password:
+          type: string
+          example: new@2023
+        cpassword:
+          type: string
+          example: new@2023
+        
+    User404:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: Freelancer Not Found
+        code:
+          type: string
+          example: user_not_found
+          
+    Token401:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: Token is invalid or expired
+        code:
+          type: string
+          example: token_not_valid
+          
+    Token403:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: Access denied
+        code:
+          type: string
+          example: access_denied
+          
+    Login403:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: Incorrect username or password
+        code:
+          type: string
+          example: credential_incorrect
+          
+  securitySchemes:
+    token:
+      description: access token for accessing resources
+      type: apiKey
+      in: header
+      name: Authorization
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
