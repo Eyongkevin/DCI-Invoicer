@@ -6,7 +6,7 @@ info:
     This application should enable the admin to partially create accounts for freelancers 
     and freelancers should be able to upload spreadsheets containing the tasks and generate the invoice. 
     This invoice should then be downloaded.
-    
+
     # Flow
     - Get registered by an admin
     - Sign in with your credentials
@@ -20,7 +20,7 @@ info:
   license:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
     name: Apache 2.0
-    
+
 tags:
   - name: Auth
     description: Authentication and Authorization
@@ -29,12 +29,12 @@ tags:
   - name: User
     description: User operations
   - name: Invoice
-    description: User's operations on Invoice 
-  
-paths: 
+    description: User's operations on Invoice
+
+paths:
   # AUTH
-  
-  /auth/register:
+
+  /api/v1/auth/register:
     post:
       tags:
         - Auth
@@ -48,13 +48,13 @@ paths:
         content:
           application/json:
             example:
-                username: kevin
-                password: kevin@2023
-                cpassword: kevin@2023
-                email: kevin.kenz-freelancer@digitalcareerinstitute.org
-                role: user
+              username: kevin
+              password: kevin@2023
+              cpassword: kevin@2023
+              email: kevin.kenz-freelancer@digitalcareerinstitute.org
+              role: user
             schema:
-              $ref: '#/components/schemas/UserRegister'
+              $ref: "#/components/schemas/UserRegister"
       responses:
         201:
           description: Created
@@ -65,20 +65,20 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserLoginDetail'
+                $ref: "#/components/schemas/UserLoginDetail"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
         403:
           description: Forbidden
           content:
             application/json:
-              schema: 
-                $ref: '#/components/schemas/Token403'
-  /auth/login:
+              schema:
+                $ref: "#/components/schemas/Token403"
+  /api/v1/auth/login:
     post:
       tags:
         - Auth
@@ -90,7 +90,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserLoginDetail'
+              $ref: "#/components/schemas/UserLoginDetail"
       responses:
         201:
           description: Access and refresh token created for accessing resources.
@@ -101,20 +101,20 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserLoginResponse'
+                $ref: "#/components/schemas/UserLoginResponse"
         403:
           description: Forbidden
           content:
             application/json:
-              schema: 
-                $ref: '#/components/schemas/Login403'
-  /auth/refresh-token:
+              schema:
+                $ref: "#/components/schemas/Login403"
+  /api/v1/auth/refresh-token:
     post:
       tags:
         - Auth
       summary: Refresh token
       description: |
-        Refresh login token 
+        Refresh login token
       requestBody:
         description: Refresh token
         content:
@@ -135,16 +135,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserRefreshTokenResponse'
+                $ref: "#/components/schemas/UserRefreshTokenResponse"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
-  
+                $ref: "#/components/schemas/Token401"
+
   # ADMIN
-  /users:
+  /api/v1/users:
     get:
       tags:
         - Admin
@@ -154,20 +154,20 @@ paths:
       description: |
         Fetch all freelancers with or without filters
       parameters:
-      - name: role
-        description: Filter freelancers by role; superuser, admin, user
-        in: query
-        schema:
-          type: string
-          pattern: '(admin)|(user)'
-          example: admin
-      - name: status
-        description: Filter freelancer by status; active, inactive
-        in: query
-        schema:
-          type: string
-          pattern: '(active)|(inactive)'
-          example: active
+        - name: role
+          description: Filter freelancers by role; superuser, admin, user
+          in: query
+          schema:
+            type: string
+            pattern: "(admin)|(user)"
+            example: admin
+        - name: status
+          description: Filter freelancer by status; active, inactive
+          in: query
+          schema:
+            type: string
+            pattern: "(active)|(inactive)"
+            example: active
       responses:
         200:
           description: Successful
@@ -176,7 +176,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
               # schema:
               #   type: object
               #   properties:
@@ -189,54 +189,54 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
         403:
           description: Forbidden
           content:
             application/json:
-              schema: 
-                $ref: '#/components/schemas/Token403'
-         
-  /users/{id}:
+              schema:
+                $ref: "#/components/schemas/Token403"
+
+  /api/v1/users/{id}:
     get:
       tags:
         - Admin
-      security: 
+      security:
         - token: []
       summary: Fetch a single user
       description: Fetch a single freelancer
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          example: 20
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 20
       responses:
         200:
           description: Successful
-          content:  
+          content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
         404:
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User404'
+                $ref: "#/components/schemas/User404"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
         403:
           description: Forbidden
           content:
             application/json:
-              schema: 
-                $ref: '#/components/schemas/Token403'
+              schema:
+                $ref: "#/components/schemas/Token403"
     put:
       tags:
         - Admin
@@ -244,44 +244,44 @@ paths:
         - token: []
       summary: Update User
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          example: 20
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 20
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUser'
-          
-      responses:  
-        200:  
+              $ref: "#/components/schemas/UpdateUser"
+
+      responses:
+        200:
           description: Successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
         404:
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User404'
+                $ref: "#/components/schemas/User404"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
         403:
           description: Forbidden
           content:
             application/json:
-              schema: 
-                $ref: '#/components/schemas/Token403'
-        
+              schema:
+                $ref: "#/components/schemas/Token403"
+
     delete:
       tags:
         - Admin
@@ -289,35 +289,35 @@ paths:
         - token: []
       summary: Delete User
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          example: 20
-      responses:  
-        204:  
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 20
+      responses:
+        204:
           description: No Content
         404:
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User404'
+                $ref: "#/components/schemas/User404"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
         403:
           description: Forbidden
           content:
             application/json:
-              schema: 
-                $ref: '#/components/schemas/Token403'
-          
-  /users/{id}/activate:
+              schema:
+                $ref: "#/components/schemas/Token403"
+
+  /api/v1/users/{id}/activate:
     put:
       tags:
         - Admin
@@ -325,18 +325,18 @@ paths:
         - token: []
       summary: Activate User
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          example: 20
-      responses:  
-        200:  
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 20
+      responses:
+        200:
           description: Successfully activated user
-          content:  
+          content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 properties:
                   detail:
@@ -347,21 +347,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User404'
+                $ref: "#/components/schemas/User404"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
         403:
           description: Forbidden
           content:
             application/json:
-              schema: 
-                $ref: '#/components/schemas/Token403'
-    
-  /users/{id}/deactivate:
+              schema:
+                $ref: "#/components/schemas/Token403"
+
+  /api/v1/users/{id}/deactivate:
     put:
       tags:
         - Admin
@@ -369,18 +369,18 @@ paths:
         - token: []
       summary: Deactivate User
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          example: 20
-      responses:  
-        200:  
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 20
+      responses:
+        200:
           description: Successful
-          content:  
+          content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 properties:
                   detail:
@@ -391,21 +391,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User404'
+                $ref: "#/components/schemas/User404"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
         403:
           description: Forbidden
           content:
             application/json:
-              schema: 
-                $ref: '#/components/schemas/Token403'
-                
-  /users/{id}/reset-pwd:
+              schema:
+                $ref: "#/components/schemas/Token403"
+
+  /api/v1/users/{id}/reset-pwd:
     put:
       tags:
         - Admin
@@ -413,24 +413,24 @@ paths:
         - token: []
       summary: Reset User password
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          example: 20
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 20
       requestBody:
         description: new password
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResetPassword'
-      responses:  
-        200:  
-          description: Successful reset password. 
-          content:  
+              $ref: "#/components/schemas/ResetPassword"
+      responses:
+        200:
+          description: Successful reset password.
+          content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 properties:
                   detail:
@@ -441,84 +441,84 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User404'
+                $ref: "#/components/schemas/User404"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
         403:
           description: Forbidden
           content:
             application/json:
-              schema: 
-                $ref: '#/components/schemas/Token403'
-  
+              schema:
+                $ref: "#/components/schemas/Token403"
+
   # USER
-  /users/profile:
+  /api/v1/users/profile:
     get:
       tags:
         - User
       security:
         - token: []
       summary: Get Profile
-      responses:  
-        200:  
-          description: Successful 
+      responses:
+        200:
+          description: Successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProfileResponse'
+                $ref: "#/components/schemas/ProfileResponse"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
-            
+                $ref: "#/components/schemas/Token401"
+
     put:
       tags:
         - User
       summary: Update Profile
       requestBody:
-        description: Profile details 
+        description: Profile details
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProfileRequest'
-      responses:  
-        200:  
-          description: Successful 
+              $ref: "#/components/schemas/ProfileRequest"
+      responses:
+        200:
+          description: Successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProfileResponse'
+                $ref: "#/components/schemas/ProfileResponse"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
-  
-  /users/address:
+                $ref: "#/components/schemas/Token401"
+
+  /api/v1/users/address:
     get:
       tags:
         - User
       summary: Get Address
-      responses:  
-        200:  
-          description: Successful 
+      responses:
+        200:
+          description: Successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Address'
+                $ref: "#/components/schemas/Address"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
     put:
       tags:
         - User
@@ -528,39 +528,39 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateAddress'
-      responses:  
-        200:  
-          description: Successful  
+              $ref: "#/components/schemas/UpdateAddress"
+      responses:
+        200:
+          description: Successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Address'
+                $ref: "#/components/schemas/Address"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
-          
-  /users/company:
+                $ref: "#/components/schemas/Token401"
+
+  /api/v1/users/company:
     get:
       tags:
         - User
       summary: Get Company Details
-      responses:  
-        200:  
-          description: Successful 
+      responses:
+        200:
+          description: Successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Company'
+                $ref: "#/components/schemas/Company"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
     put:
       tags:
         - User
@@ -568,41 +568,41 @@ paths:
       requestBody:
         description: Company details
         content:
-          application/json:   
+          application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCompany'
-      responses:  
-        200:  
-          description: Successful 
+              $ref: "#/components/schemas/UpdateCompany"
+      responses:
+        200:
+          description: Successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Company'
+                $ref: "#/components/schemas/Company"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
-          
-  /users/assignment:
+                $ref: "#/components/schemas/Token401"
+
+  /api/v1/users/assignment:
     get:
       tags:
         - User
       summary: Get Assignment Details
-      responses:  
-        200:  
-          description: Successful 
+      responses:
+        200:
+          description: Successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Assignment'
+                $ref: "#/components/schemas/Assignment"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
     put:
       tags:
         - User
@@ -610,24 +610,24 @@ paths:
       requestBody:
         description: Assignment details
         content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UpdateAssignment'
-      responses:  
-        200:  
-          description: Successful 
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAssignment"
+      responses:
+        200:
+          description: Successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Assignment'
+                $ref: "#/components/schemas/Assignment"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
-  
-  /users/reset-pwd:
+                $ref: "#/components/schemas/Token401"
+
+  /api/v1/users/reset-pwd:
     put:
       tags:
         - User
@@ -637,13 +637,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResetPassword'
-      responses:  
-        302:  
-          description: Successful reset password. Redirect to login  
-          content:  
+              $ref: "#/components/schemas/ResetPassword"
+      responses:
+        302:
+          description: Successful reset password. Redirect to login
+          content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 properties:
                   detail:
@@ -654,9 +654,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
-          
-  /users/upload:
+                $ref: "#/components/schemas/Token401"
+
+  /api/v1/users/upload:
     post:
       tags:
         - User
@@ -667,19 +667,19 @@ paths:
             schema:
               type: string
               format: binary
-      responses:  
-        200:  
-          description: Successful 
+      responses:
+        200:
+          description: Successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Upload'
+                $ref: "#/components/schemas/Upload"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
         400:
           description: Bad Request
           content:
@@ -706,8 +706,8 @@ paths:
                   code:
                     type: string
                     example: file_not_allowed_type
-    
-  /users/generate:
+
+  /api/v1/users/generate:
     post:
       tags:
         - User
@@ -723,19 +723,19 @@ paths:
                 s3_id:
                   type: string
                   example: s3-4838skskhghls-3llshglslhe
-      responses:  
-        200:  
-          description: Successful 
+      responses:
+        200:
+          description: Successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Invoice'
+                $ref: "#/components/schemas/Invoice"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
         400:
           description: Bad Request
           content:
@@ -775,45 +775,45 @@ paths:
                   code:
                     type: string
                     example: file_not_found
-   
-  /invoice:
+
+  /api/v1/invoice:
     get:
       tags:
         - Invoice
       summary: Get Invoices
       description: Get all invoices that were generated and still in the database
-      responses:  
-        200:  
-          description: Successful 
+      responses:
+        200:
+          description: Successful
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Invoice'
+                  $ref: "#/components/schemas/Invoice"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
-          
-  /invoice/{s3_invoice_id}:
+                $ref: "#/components/schemas/Token401"
+
+  /api/v1/invoice/{s3_invoice_id}:
     get:
       tags:
         - Invoice
       summary: View invoice
       description: View an invoice that was generated
       parameters:
-      - name: s3_invoice_id
-        in: path
-        required: true
-        schema:
-          type: integer
-          example: 20
-      responses:  
-        200:  
-          description: Successful 
+        - name: s3_invoice_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 20
+      responses:
+        200:
+          description: Successful
           content:
             application/pdf:
               schema:
@@ -824,7 +824,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
         404:
           description: Not Found
           content:
@@ -838,28 +838,28 @@ paths:
                   code:
                     type: string
                     example: file_not_found
-          
+
     delete:
       tags:
         - Invoice
       summary: Delete invoice
       description: Manually delete an invoice
       parameters:
-      - name: s3_invoice_id
-        in: path
-        required: true
-        schema:
-          type: integer
-          example: 20
-      responses:  
-        204:  
-          description: Deleted 
+        - name: s3_invoice_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 20
+      responses:
+        204:
+          description: Deleted
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
         404:
           description: Not Found
           content:
@@ -873,26 +873,26 @@ paths:
                   code:
                     type: string
                     example: file_not_found
-          
-  /invoice/{s3_invoice_id}/download:
+
+  /api/v1/invoice/{s3_invoice_id}/download:
     get:
       tags:
         - Invoice
       summary: Download invoice
       description: Download a generated invoice
       parameters:
-      - name: s3_invoice_id
-        in: path
-        required: true
-        schema:
-          type: integer
-          example: 20
-      responses:  
-        200:  
-          description: Successful 
-          content:  
+        - name: s3_invoice_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 20
+      responses:
+        200:
+          description: Successful
+          content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 properties:
                   detail:
@@ -903,7 +903,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token401'
+                $ref: "#/components/schemas/Token401"
         404:
           description: Not Found
           content:
@@ -918,7 +918,7 @@ paths:
                     type: string
                     example: file_not_found
 components:
-  schemas: 
+  schemas:
     User:
       type: object
       example:
@@ -927,8 +927,8 @@ components:
         email: kevin.kenz-freelancer@digitalcareerinstitute.org
         role: user
         status: active
-        created_at: '2023-11-15 13:07:32.418457+01'
-        modified_at: '2023-11-15 13:07:32.418457+01'
+        created_at: "2023-11-15 13:07:32.418457+01"
+        modified_at: "2023-11-15 13:07:32.418457+01"
       properties:
         id:
           type: integer
@@ -937,12 +937,12 @@ components:
         email:
           type: string
           pattern: '[a-zA-Z0-9.\-]{4,15}-freelancer@digitalcareerinstitute\.org'
-        role: 
+        role:
           type: string
-          pattern: '(superuser)|(admin)|(user)'
+          pattern: "(superuser)|(admin)|(user)"
         status:
           type: string
-          pattern: '(active)|(inactive)'
+          pattern: "(active)|(inactive)"
         created_at:
           type: string
         modified_at:
@@ -961,20 +961,24 @@ components:
           pattern: '[a-zA-Z0-9.\-]{4,15}-freelancer@digitalcareerinstitute\.org'
         role:
           type: string
-          pattern: '(admin)|(user)'
+          pattern: "(admin)|(user)"
     UserLoginDetail:
       type: object
       example:
-          username: kevin
-          password: kevin@2023
+        username: kevin
+        password: kevin@2023
       properties:
         username:
           type: string
         password:
           type: string
-        
+
     UserLoginResponse:
       type: object
+      example:
+        token: irZZfVaueibP6.7VINcB.C5ZBjlucnoyG3IJ3pLuLKUClnXQ1x-hh5-WSsL.OYF0MHsj-MFu34e6rjf9llLNDGz9iV8cFDmUwJbBFm5f6DKILbOvIBJuIHbBCJM6JH7KnUIHNc7lhXWZRibTy.fa33a3o7EnYuNnsTAjJAQj53ERmOfGsthnnDpbe3zxlGBV-JGgnw.U
+        refresh: T22WDn0Li.6duXkDXD2NEjdjT0PLks1iexkMfQpJeraXZXQjDDRSnduHaI8SjGj5S4gQHZGvajfWwODxRAqIn1m6jNLf4V6Bousa6kDvwyKfTQKCfLnbrkIjJM3a9RROndI5l-dSkwLKcatc54mW15rrpBOfuKzwBaGUfgfqd4MLtS45HHqm1BMfq5DsnyNYB7-5SMca
+
       properties:
         token:
           type: string
@@ -988,6 +992,8 @@ components:
         token:
           type: string
           pattern: '[a-zA-Z0-9.\-]{200}'
+          example:
+            token: irZZfVaueibP6.7VINcB.C5ZBjlucnoyG3IJ3pLuLKUClnXQ1x-hh5-WSsL.OYF0MHsj-MFu34e6rjf9llLNDGz9iV8cFDmUwJbBFm5f6DKILbOvIBJuIHbBCJM6JH7KnUIHNc7lhXWZRibTy.fa33a3o7EnYuNnsTAjJAQj53ERmOfGsthnnDpbe3zxlGBV-JGgnw.U
     UpdateUser:
       type: object
       example:
@@ -995,15 +1001,30 @@ components:
         email: kevin.kenz-freelancer@digitalcareerinstitute.org
         role: user
       properties:
-        username: 
+        username:
           type: string
-        email:  
+        email:
           type: string
           pattern: '[a-zA-Z0-9.\-]{4,15}-freelancer@digitalcareerinstitute\.org'
         role:
           type: string
-          pattern: '(admin)|(user)'
-        
+          pattern: "(admin)|(user)"
+
+    ExtraDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 20
+        user_id:
+          type: integer
+          example: 45
+        created_at:
+          type: string
+          example: "2023-11-15 13:07:32.418457+01"
+        modified_at:
+          type: string
+          example: "2023-11-15 13:07:32.418457+01"
     ProfileObj:
       type: object
       example:
@@ -1011,18 +1032,16 @@ components:
         po_number: PO-598
         vat_id: null
         bank_name: UBA Cameroon SA
-        iban: 'CM21 10033 05212 12002006853 24'
+        iban: "CM21 10033 05212 12002006853 24"
         swift_bic: UNAFCMCX
         first_name: kevin Enowanyo
         last_name: Eyong
         transfer_deadline_day: 16
-        
+
       properties:
-        id:
-          type: integer
         tax_number:
           type: string
-        po_number: 
+        po_number:
           type: string
         vat_id:
           type: string
@@ -1043,57 +1062,24 @@ components:
           type: string
         modified_at:
           type: string
-    
+
     ProfileResponse:
       allOf:
-        - type: object
-          example:
-            id: 20
-            created_at: '2023-11-15 13:07:32.418457+01'
-            modified_at: '2023-11-15 13:07:32.418457+01'
-          properties:
-            id:
-              type: string
-            created_at:
-              type: string
-            modified_at:
-              type: string
-        - $ref: '#/components/schemas/ProfileObj'
-      
+        - $ref: "#/components/schemas/ProfileObj"
+        - $ref: "#/components/schemas/ExtraDetail"
+
     ProfileRequest:
       allOf:
-        - $ref: '#/components/schemas/ProfileObj'
+        - $ref: "#/components/schemas/ProfileObj"
 
     Address:
-      type: object
-      example:
-        id: 20
-        po_box: '00000'
-        city: Yaounde
-        country: Cameroon
-        address: Biyem-Assi Junction
-        created_at: '2023-11-15 13:07:32.418457+01'
-        modified_at: '2023-11-15 13:07:32.418457+01'
-      properties:
-        id: 
-          type: integer
-        po_box:
-          type: string
-        city:
-          type: string
-        country:
-          type: string
-        address:  
-          type: string
-        created_at:
-          type: string
-        modified_at:
-          type: string
-          
+      allOf:
+        - $ref: "#/components/schemas/ExtraDetail"
+        - $ref: "#/components/schemas/UpdateAddress"
     UpdateAddress:
       type: object
       example:
-        po_box: '00000'
+        po_box: "00000"
         city: Yaounde
         country: Cameroon
         address: Biyem-Assi Junction
@@ -1104,30 +1090,12 @@ components:
           type: string
         country:
           type: string
-        address:  
+        address:
           type: string
     Company:
-      type: object
-      example:
-        id: 20
-        name: DCI-Digital Career Institute GmbH
-        address_1: Vulkanstr. 1
-        address_2: 10367 Berlin
-        created_at: '2023-11-15 13:07:32.418457+01'
-        modified_at: '2023-11-15 13:07:32.418457+01'
-      properties:
-        id: 
-          type: integer
-        name:
-          type: string
-        address_1:
-          type: string
-        address_2:
-          type: string
-        created_at:
-          type: string
-        modified_at:
-          type: string
+      allOf:
+        - $ref: "#/components/schemas/ExtraDetail"
+        - $ref: "#/components/schemas/UpdateCompany"
     UpdateCompany:
       type: object
       example:
@@ -1142,24 +1110,9 @@ components:
         address_2:
           type: string
     Assignment:
-      type: object
-      example:
-        id: 30
-        signed_agreement: 2023-11-15
-        end_date: 2024-11-15
-        created_at: '2023-11-15 13:07:32.418457+01'
-        modified_at: '2023-11-15 13:07:32.418457+01'
-      properties:
-        id: 
-          type: integer
-        signed_agreement:
-          type: string
-        end_date:
-          type: string
-        created_at:
-          type: string
-        modified_at:
-          type: string
+      allOf:
+        - $ref: "#/components/schemas/ExtraDetail"
+        - $ref: "#/components/schemas/UpdateAssignment"
     UpdateAssignment:
       type: object
       example:
@@ -1173,9 +1126,9 @@ components:
     Deactivate:
       type: object
       properties:
-        id: 
+        id:
           type: integer
-        user_id: 
+        user_id:
           type: integer
         date_time:
           type: string
@@ -1192,24 +1145,29 @@ components:
         size: 1200
         s3_invoice_id: null
       properties:
-        id: 
+        id:
           type: integer
         s3_id:
           type: string
-        name: 
+        name:
           type: string
-        size: 
+        size:
           type: integer
         s3_invoice_id:
           type: string
           nullable: true
-          
+
     Invoice:
       allOf:
-        - $ref: '#/components/schemas/Upload'
+        - $ref: "#/components/schemas/Upload"
         - type: object
-          example:
-            s3_invoice_id: s3-4838skskhghls-3ll998skskhghls838-33kls
+          properties:
+            user_id:
+              type: string
+              example: 56
+            s3_invoice_id:
+              type: string
+              example: s3-4838skskhghls-3ll998skskhghls838-33kls
     ResetPassword:
       type: object
       properties:
@@ -1219,7 +1177,7 @@ components:
         cpassword:
           type: string
           example: new@2023
-        
+
     User404:
       type: object
       properties:
@@ -1229,7 +1187,7 @@ components:
         code:
           type: string
           example: user_not_found
-          
+
     Token401:
       type: object
       properties:
@@ -1239,7 +1197,7 @@ components:
         code:
           type: string
           example: token_not_valid
-          
+
     Token403:
       type: object
       properties:
@@ -1249,7 +1207,7 @@ components:
         code:
           type: string
           example: access_denied
-          
+
     Login403:
       type: object
       properties:
@@ -1259,26 +1217,10 @@ components:
         code:
           type: string
           example: credential_incorrect
-          
+
   securitySchemes:
     token:
       description: access token for accessing resources
       type: apiKey
       in: header
       name: Authorization
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
