@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 
-BASE_API_PATH = getattr(settings, "BASE_API_PATH", "api")
+BASE_API_PATH: str = getattr(settings, "BASE_API_PATH", "api")
 
 urlpatterns = [
     path("admin/", admin.site.urls),

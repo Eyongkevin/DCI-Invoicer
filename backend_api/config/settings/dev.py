@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional, Tuple, Union
 
 from .base import *
 
@@ -22,11 +23,12 @@ DATABASES = {
     }
 }
 
-SIMPLE_JWT = {
+SIMPLE_JWT: Dict[str, Optional[Union[str, Tuple[str], datetime.timedelta, bool]]] = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=10),
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=20),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
     "VERIFYING_KEY": None,

@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from apps.core.abstracts import AbstractSerializer
 
 from .models import User
@@ -5,8 +7,8 @@ from .models import User
 
 class UserSerializer(AbstractSerializer):
     class Meta:
-        model = User
-        fields = (
+        model: User = User
+        fields: Tuple[str, ...] = (
             "id",
             "username",
             "email",
@@ -15,4 +17,4 @@ class UserSerializer(AbstractSerializer):
             "created",
             "updated",
         )
-        read_only_fields = ("is_active", "created", "updated")
+        read_only_fields: Tuple[str, ...] = ("is_active", "created", "updated")

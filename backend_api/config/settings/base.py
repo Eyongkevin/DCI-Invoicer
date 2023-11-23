@@ -1,12 +1,13 @@
 from pathlib import Path
+from typing import Dict, List, Tuple, Union
 
 import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-env = environ.Env(DEBUG=(bool, False))
+env: environ.Env = environ.Env(DEBUG=(bool, False))
 
-DEFAULT_APPS = [
+DEFAULT_APPS: List[str] = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -15,18 +16,18 @@ DEFAULT_APPS = [
     "django.contrib.staticfiles",
 ]
 
-CUSTOM_APPS = [
+CUSTOM_APPS: List[str] = [
     "apps.core.apps.CoreConfig",
     "apps.auth.apps.AuthConfig",
     "apps.user.apps.UserConfig",
 ]
 
-THIRD_PARTY_APPS = [
+THIRD_PARTY_APPS: List[str] = [
     "django_extensions",
     "django_filters",
 ]
 
-INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
+INSTALLED_APPS: List[str] = DEFAULT_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -56,7 +57,7 @@ TEMPLATES = [
     },
 ]
 
-REST_FRAMEWORK = {
+REST_FRAMEWORK: Dict[str, Union[int, List[str], Tuple[str], str]] = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
@@ -103,6 +104,7 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-AUTH_USER_MODEL = "apps_user.User"
+AUTH_USER_MODEL: str = "apps_user.User"
 
-BASE_API_PATH = "api"
+BASE_API_PATH: str = "api"
+APPEND_SLASH: bool = False

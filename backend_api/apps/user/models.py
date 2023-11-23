@@ -1,3 +1,5 @@
+from typing import NoReturn, Union
+
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -20,7 +22,7 @@ class UserManager(BaseUserManager, AbstractManager):
         role: UserRoleEnum = UserRoleEnum("US"),
         password: str = None,
         **kwargs
-    ):
+    ) -> Union["User", NoReturn]:
         if username is None:
             raise TypeError("User must have a username")
         if email is None:
@@ -45,7 +47,9 @@ class UserManager(BaseUserManager, AbstractManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username: str, email: str, password: str, **kwargs):
+    def create_superuser(
+        self, username: str, email: str, password: str, **kwargs
+    ) -> Union["User", NoReturn]:
         if "role" in kwargs and not kwargs.get("role") == UserRoleEnum.superuser:
             raise TypeError("Superuser must have role set to 'superuser'")
 
