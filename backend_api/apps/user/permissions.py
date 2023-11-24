@@ -25,7 +25,24 @@ class UpdateSuperuserRoleNotAllowed(BasePermission):
     }
 
     def has_object_permission(self, request, view, obj) -> bool:
-        return not obj.is_superuser
+        if request.method == "PATCH":
+            return not obj.is_superuser
+        return True
+
+    def has_permission(self, request, view) -> bool:
+        return True
+
+
+class DeleteSuperuserNotAllowed(BasePermission):
+    message: Dict[str, str] = {
+        "detail": "Superuser can't be deleted",
+        "code": "delete_superuser_failed",
+    }
+
+    def has_object_permission(self, request, view, obj) -> bool:
+        if request.method == "DELETE":
+            return not obj.is_superuser
+        return True
 
     def has_permission(self, request, view) -> bool:
         return True
