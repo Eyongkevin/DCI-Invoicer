@@ -18,10 +18,10 @@ class UpdateRoleToSuperuserNotAllowed(BasePermission):
         return True
 
 
-class UpdateSuperuserRoleNotAllowed(BasePermission):
+class UpdateSuperuserRoleAllowed(BasePermission):
     message: Dict[str, str] = {
-        "detail": "Role of Superuser can't be updated",
-        "code": "role_update_failed",
+        "detail": "Superuser can't be updated",
+        "code": "superuser_update_failed",
     }
 
     def has_object_permission(self, request, view, obj) -> bool:
