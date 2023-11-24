@@ -1,4 +1,4 @@
-from typing import NoReturn, Tuple, Union
+from typing import Tuple
 
 from apps.core.abstracts import AbstractSerializer
 from apps.core.schemas import UserRoleEnum
