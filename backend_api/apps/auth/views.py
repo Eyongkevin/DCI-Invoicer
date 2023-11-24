@@ -6,10 +6,7 @@ from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
-from rest_framework_simplejwt.serializers import (
-    TokenObtainPairSerializer,
-    TokenRefreshSerializer,
-)
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from apps.core.exceptions import (
@@ -18,13 +15,10 @@ from apps.core.exceptions import (
     UserMissingCpasswordEx,
     UserNonDCIFreelancerEmailEx,
 )
-from apps.core.permissions import UserPermission
+from apps.core.permissions import OnlyAdminAndSuperuserPermission, UserPermission
 from apps.user.models import User
 
-from .permissions import (
-    OnlySuperuserCreateSuperuserPermission,
-    RegistrationOnlyAdminAndSuperuserPermission,
-)
+from .permissions import OnlySuperuserCreateSuperuserPermission
 from .serializers import LoginSerializer, RegistrationSerializer
 
 # Create your views here.
@@ -53,7 +47,7 @@ class RegisterViewSet(ViewSet):
     serializer_class = RegistrationSerializer
     permission_classes = (
         UserPermission,
-        RegistrationOnlyAdminAndSuperuserPermission,
+        OnlyAdminAndSuperuserPermission,
         OnlySuperuserCreateSuperuserPermission,
     )
     http_method_names = ("post",)

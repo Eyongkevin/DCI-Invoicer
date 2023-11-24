@@ -7,4 +7,5 @@ BASE_API_PATH: str = getattr(settings, "BASE_API_PATH", "api")
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(f"{BASE_API_PATH}/", include("apps.auth.urls")),
+    path(f"{BASE_API_PATH}/", include("apps.user.urls")),
 ]
