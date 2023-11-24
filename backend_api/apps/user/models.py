@@ -5,7 +5,9 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 
 from apps.core.abstracts import AbstractManager, AbstractModel
@@ -66,6 +68,13 @@ class UserManager(BaseUserManager, AbstractManager):
         user.is_staff = True
         user.save(using=self._db)
         return user
+
+    def get_object_by_username(self, username):
+        try:
+            instance = self.get(username=username)
+            return instance
+        except (ObjectDoesNotExist, ValueError, TypeError) as err:
+            raise Http404 from err
 
 
 class User(AbstractBaseUser, PermissionsMixin, AbstractModel):

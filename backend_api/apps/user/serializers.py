@@ -24,5 +24,5 @@ class UserSerializer(AbstractSerializer):
         if validated_data.get("role") == UserRoleEnum.superuser.value:
             instance.is_superuser = True
         else:
-            isinstance.is_superuser = False
+            instance.is_superuser = False
         return super().update(instance, validated_data)

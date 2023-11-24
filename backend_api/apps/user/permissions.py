@@ -1,5 +1,6 @@
 from typing import Dict
 
+from django.contrib.auth import get_user_model
 from rest_framework.permissions import BasePermission
 
 from apps.core.schemas import UserRoleEnum

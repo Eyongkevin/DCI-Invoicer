@@ -7,7 +7,7 @@ from .serializers import UserSerializer
 
 
 class UserViewSet(AbstractViewSet):
-    http_method_names = ("get", "put")
+    http_method_names = ("get", "put", "patch")
     permission_classes = (
         UserPermission,
         OnlyAdminAndSuperuserPermission,
