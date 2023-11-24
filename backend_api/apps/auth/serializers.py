@@ -48,5 +48,7 @@ class RegistrationSerializer(UserSerializer):
         return data
 
     def create(self, validated_data) -> Union[User, NoReturn]:
-        validated_data["role"] = UserRoleEnum(validated_data.get("role"))
+        validated_data["role"]: UserRoleEnum = UserRoleEnum(validated_data.get("role"))
+        if validated_data.get("role") == UserRoleEnum.superuser:
+            return User.objects.create_superuser(**validated_data)
         return User.objects.create_user(**validated_data)

@@ -50,14 +50,16 @@ class UserManager(BaseUserManager, AbstractManager):
     def create_superuser(
         self, username: str, email: str, password: str, **kwargs
     ) -> Union["User", NoReturn]:
-        if "role" in kwargs and not kwargs.get("role") == UserRoleEnum.superuser:
-            raise TypeError("Superuser must have role set to 'superuser'")
+        if "role" in kwargs:
+            if not kwargs.get("role") == UserRoleEnum.superuser:
+                raise TypeError("Superuser must have role set to 'superuser'")
+        else:
+            kwargs["role"]: UserRoleEnum = UserRoleEnum("SU")
 
         user: User = self.create_user(
             username=username,
             email=email,
             password=password,
-            role=UserRoleEnum("SU"),
             **kwargs,
         )
         user.is_superuser = True

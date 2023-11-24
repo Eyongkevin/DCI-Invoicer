@@ -7,7 +7,7 @@ from apps.core.schemas import UserRoleEnum
 
 class RegistrationOnlyAdminAndSuperuserPermission(BasePermission):
     message: Dict[str, str] = {
-        "detail": "You do not have permission to perform this action",
+        "detail": "Only Admin and Superuser can perform registration",
         "code": "registration_only_admin_or_superuser_failed",
     }
 
@@ -28,3 +28,15 @@ class RegistrationOnlyAdminAndSuperuserPermission(BasePermission):
         if self._is_admin_or_superuser(request):
             return True
         return False
+
+
+class OnlySuperuserCreateSuperuserPermission(BasePermission):
+    message: Dict[str, str] = {
+        "detail": "Only a superuser can create another superuser",
+        "code": "only_superuser_create_superuser_failed",
+    }
+
+    def has_permission(self, request, view) -> bool:
+        if request.data.get("role") == UserRoleEnum.superuser.value:
+            return request.user.is_superuser
+        return True

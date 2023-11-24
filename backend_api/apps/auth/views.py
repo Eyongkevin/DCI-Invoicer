@@ -17,7 +17,10 @@ from apps.core.exceptions import (
 from apps.core.permissions import UserPermission
 from apps.user.models import User
 
-from .permissions import RegistrationOnlyAdminAndSuperuserPermission
+from .permissions import (
+    OnlySuperuserCreateSuperuserPermission,
+    RegistrationOnlyAdminAndSuperuserPermission,
+)
 from .serializers import LoginSerializer, RegistrationSerializer
 
 # Create your views here.
@@ -44,7 +47,11 @@ class LoginViewSet(ViewSet):
 
 class RegisterViewSet(ViewSet):
     serializer_class = RegistrationSerializer
-    permission_classes = (UserPermission, RegistrationOnlyAdminAndSuperuserPermission)
+    permission_classes = (
+        UserPermission,
+        RegistrationOnlyAdminAndSuperuserPermission,
+        OnlySuperuserCreateSuperuserPermission,
+    )
     http_method_names = ("post",)
 
     def create(self, request, *args, **kwargs) -> Union[Response, NoReturn]:
