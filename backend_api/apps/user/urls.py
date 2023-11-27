@@ -9,8 +9,9 @@ router.register(r"v1/users", views.UserViewSet, basename="v1-users")
 router.register(
     r"v1/users/reset-pwd", views.UserResetPassword, basename="v1-users-reset-pwd"
 )
-router.register(r"v1/user/profile", views.ProfileViewSet, basename="v1-users-profile")
+router.register(r"v1/user/profile", views.ProfileViewSet, basename="v1-user-profile")
 
+router.register(r"v1/user/address", views.AddressViewSet, basename="v1-user-address")
 
 urlpatterns = [
     *router.urls,

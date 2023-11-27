@@ -10,12 +10,7 @@ from django.db import models
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 
-from apps.core.abstracts import (
-    AbstractManager,
-    AbstractModel,
-    AbstractUserManager,
-    AbstractUserModel,
-)
+from apps.core.abstracts import AbstractManager, AbstractModel, AbstractUserManager
 from apps.core.schemas import UserRoleEnum
 
 # Create your models here.
@@ -112,7 +107,10 @@ class ProfileManage(AbstractUserManager):
     ...
 
 
-class Profile(AbstractUserModel):
+class Profile(AbstractModel):
+    user_id = models.OneToOneField(
+        "apps_user.User", on_delete=models.CASCADE, related_name="profile"
+    )
     tax_number = models.CharField(50, null=True, blank=True)
     po_number = models.CharField(5, null=True, blank=True)
     vat_id = models.CharField(50, null=True, blank=True)
@@ -127,3 +125,20 @@ class Profile(AbstractUserModel):
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
+
+
+class AddressManager(AbstractUserManager):
+    ...
+
+
+class Address(AbstractModel):
+    user_id = models.OneToOneField(
+        "apps_user.User", on_delete=models.CASCADE, related_name="address"
+    )
+    po_box = models.CharField(5, default="00000")
+    city = models.CharField(50)
+    country = models.CharField(100)
+    address = models.CharField(150)
+
+    def __str__(self) -> str:
+        return self.user_id.username

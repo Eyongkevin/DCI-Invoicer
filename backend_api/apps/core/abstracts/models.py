@@ -37,10 +37,8 @@ class AbstractModel(models.Model):
         abstract = True
 
 
-class AbstractUserModel(AbstractModel):
-    user_id = models.OneToOneField(
-        "apps_user.User", on_delete=models.CASCADE, related_name="profile"
-    )
+# class AbstractUserModel(AbstractModel):
+#     user_id = models.OneToOneField("apps_user.User", on_delete=models.CASCADE)
 
-    class Meta:
-        abstract = True
+#     class Meta:
+#         abstract = True
