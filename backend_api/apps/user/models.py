@@ -158,3 +158,18 @@ class Company(AbstractModel):
 
     def __str__(self):
         return self.name
+
+
+class AssignmentManager(AbstractUserManager):
+    ...
+
+
+class Assignment(AbstractModel):
+    user_id = models.OneToOneField(
+        "apps_user.User", on_delete=models.CASCADE, related_name="assignment"
+    )
+    signed_agreement = models.DateField()
+    end_date = models.DateField()
+
+    def __str__(self):
+        return f"{self.user_id.username} - {self.end_date}"

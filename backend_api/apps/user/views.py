@@ -5,7 +5,7 @@ from apps.core.exceptions import UserMismatchPasswordsEx, UserMissingCpasswordEx
 from apps.core.permissions import OnlyAdminAndSuperuserPermission, UserPermission
 
 from .mixins import CreateMixin, FilterByLoggedUserMixin, InsertUserIdMixins
-from .models import Address, Company, Profile, User
+from .models import Address, Assignment, Company, Profile, User
 from .permissions import (
     DeleteSuperuserNotAllowed,
     ObjectBelongToUser,
@@ -14,6 +14,7 @@ from .permissions import (
 )
 from .serializers import (
     AddressSerializer,
+    AssignmentSerializer,
     CompanySerializer,
     ProfileSerializer,
     ResetPasswordSerializer,
@@ -78,3 +79,10 @@ class CompanyViewSet(FilterByLoggedUserMixin, CreateMixin, AbstractViewSet):
     permission_classes = (UserPermission, ObjectBelongToUser)
     serializer_class = CompanySerializer
     queryset = Company.objects.all()
+
+
+class AssignmentViewSet(FilterByLoggedUserMixin, CreateMixin, AbstractViewSet):
+    http_method_names = ("post", "get", "patch", "delete")
+    permission_classes = (UserPermission, ObjectBelongToUser)
+    serializer_class = AssignmentSerializer
+    queryset = Assignment.objects.all()
