@@ -46,3 +46,13 @@ class DeleteSuperuserNotAllowed(BasePermission):
 
     def has_permission(self, request, view) -> bool:
         return True
+
+
+class ObjectBelongToUser(BasePermission):
+    message: Dict[str, str] = {
+        "detail": "Access denied on this object",
+        "code": "access_denied",
+    }
+
+    def has_object_permission(self, request, view, obj) -> bool:
+        return request.user == obj.user_id

@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -5,13 +6,15 @@ from apps.core.abstracts import AbstractViewSet
 from apps.core.exceptions import UserMismatchPasswordsEx, UserMissingCpasswordEx
 from apps.core.permissions import OnlyAdminAndSuperuserPermission, UserPermission
 
-from .models import User
+from .mixins import CreateMixin, FilterByLoggedUserMixin, InsertUserIdMixins
+from .models import Profile, User
 from .permissions import (
     DeleteSuperuserNotAllowed,
+    ObjectBelongToUser,
     UpdateRoleToSuperuserNotAllowed,
     UpdateSuperuserRoleAllowed,
 )
-from .serializers import ResetPasswordSerializer, UserSerializer
+from .serializers import ProfileSerializer, ResetPasswordSerializer, UserSerializer
 
 
 class UserViewSet(AbstractViewSet):
@@ -50,3 +53,10 @@ class UserResetPassword(AbstractViewSet):
                 "code": "password_updated",
             }
         )
+
+
+class ProfileViewSet(FilterByLoggedUserMixin, CreateMixin, AbstractViewSet):
+    http_method_names = ("post", "get", "patch", "delete")
+    permission_classes = (UserPermission, ObjectBelongToUser)
+    serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
