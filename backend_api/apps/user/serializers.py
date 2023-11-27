@@ -6,7 +6,7 @@ from apps.core.abstracts import AbstractSerializer
 from apps.core.exceptions import UserMismatchPasswordsEx
 from apps.core.schemas import UserRoleEnum
 
-from .models import Address, Profile, User
+from .models import Address, Company, Profile, User
 
 
 class UserSerializer(AbstractSerializer):
@@ -95,6 +95,25 @@ class AddressSerializer(AbstractSerializer):
             "city",
             "country",
             "address",
+            "created",
+            "updated",
+        )
+        read_only_fields = ("created", "updated")
+
+
+class CompanySerializer(AbstractSerializer):
+    user_id = serializers.SlugRelatedField(
+        queryset=User.objects.all(), slug_field="public_id"
+    )
+
+    class Meta:
+        model: Company = Company
+        fields = (
+            "id",
+            "user_id",
+            "name",
+            "address_1",
+            "address_2",
             "created",
             "updated",
         )

@@ -12,6 +12,7 @@ router.register(
 router.register(r"v1/user/profile", views.ProfileViewSet, basename="v1-user-profile")
 
 router.register(r"v1/user/address", views.AddressViewSet, basename="v1-user-address")
+router.register(r"v1/user/company", views.CompanyViewSet, basename="v1-user-company")
 
 urlpatterns = [
     *router.urls,

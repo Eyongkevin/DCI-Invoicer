@@ -142,3 +142,19 @@ class Address(AbstractModel):
 
     def __str__(self) -> str:
         return self.user_id.username
+
+
+class CompanyManager(AbstractUserManager):
+    ...
+
+
+class Company(AbstractModel):
+    user_id = models.OneToOneField(
+        "apps_user.User", on_delete=models.CASCADE, related_name="company"
+    )
+    name = models.CharField(100)
+    address_1 = models.CharField(100)
+    address_2 = models.CharField(100)
+
+    def __str__(self):
+        return self.name

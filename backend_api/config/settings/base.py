@@ -107,4 +107,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL: str = "apps_user.User"
 
 BASE_API_PATH: str = "api"
-APPEND_SLASH: bool = False
+APPEND_SLASH: bool = True
