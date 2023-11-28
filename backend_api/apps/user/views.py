@@ -1,10 +1,9 @@
 from rest_framework.response import Response
 
 from apps.core.abstracts import AbstractViewSet
-from apps.core.exceptions import UserMismatchPasswordsEx, UserMissingCpasswordEx
 from apps.core.permissions import OnlyAdminAndSuperuserPermission, UserPermission
 
-from .mixins import CreateMixin, FilterByLoggedUserMixin, InsertUserIdMixins
+from .mixins import CreateMixin, FilterByLoggedUserMixin
 from .models import Address, Assignment, Company, Profile, User
 from .permissions import (
     DeleteSuperuserNotAllowed,

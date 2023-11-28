@@ -3,12 +3,6 @@ from rest_framework import status
 from rest_framework.response import Response
 
 
-class InsertUserIdMixins:
-    def get_queryset(self):
-        breakpoint()
-        # return super().get_queryset()
-
-
 class FilterByLoggedUserMixin:
     def get_queryset(self):
         profiles = super().get_queryset()
