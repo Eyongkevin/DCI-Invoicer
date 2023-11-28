@@ -7,6 +7,7 @@ from .mixins import CreateMixin, FilterByLoggedUserMixin
 from .models import Address, Assignment, Company, Profile, User
 from .permissions import (
     DeleteSuperuserNotAllowed,
+    IfNotOwnerThenAdminOrSuperuserOnly,
     ObjectBelongToUser,
     UpdateRoleToSuperuserNotAllowed,
     UpdateSuperuserRoleAllowed,
@@ -39,7 +40,7 @@ class UserResetPassword(AbstractViewSet):
     http_method_names = ("patch",)
     permission_classes = (
         UserPermission,
-        OnlyAdminAndSuperuserPermission,
+        IfNotOwnerThenAdminOrSuperuserOnly,
         UpdateSuperuserRoleAllowed,
     )
     serializer_class = ResetPasswordSerializer

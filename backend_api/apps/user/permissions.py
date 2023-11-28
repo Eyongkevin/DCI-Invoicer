@@ -2,6 +2,7 @@ from typing import Dict
 
 from rest_framework.permissions import BasePermission
 
+from apps.core.permissions import OnlyAdminAndSuperuserPermission
 from apps.core.schemas import UserRoleEnum
 
 
@@ -56,3 +57,13 @@ class ObjectBelongToUser(BasePermission):
 
     def has_object_permission(self, request, view, obj) -> bool:
         return request.user == obj.user_id
+
+
+class IfNotOwnerThenAdminOrSuperuserOnly(OnlyAdminAndSuperuserPermission):
+    def has_object_permission(self, request, view, obj):
+        if request.user == obj:
+            return True
+        return super().has_object_permission(request, view, obj)
+
+    def has_permission(self, request, view) -> bool:
+        return True
