@@ -1,9 +1,10 @@
 from rest_framework.response import Response
 
 from apps.core.abstracts import AbstractViewSet
+from apps.core.mixins import FilterByLoggedUserMixin
 from apps.core.permissions import OnlyAdminAndSuperuserPermission, UserPermission
 
-from .mixins import CreateMixin, FilterByLoggedUserMixin
+from .mixins import CreateMixin
 from .models import Address, Assignment, Company, Profile, User
 from .permissions import (
     DeleteSuperuserNotAllowed,

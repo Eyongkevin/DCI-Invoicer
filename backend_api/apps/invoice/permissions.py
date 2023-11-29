@@ -10,7 +10,9 @@ class UserIDBelongToUser(BasePermission):
     }
 
     def has_object_permission(self, request, view, obj) -> bool:
-        return request.data.get("user_id") == str(request.user.public_id)
+        if request.method in ["POST"]:
+            return request.data.get("user_id") == str(request.user.public_id)
+        return True
 
     def has_permission(self, request, view) -> bool:
         return True

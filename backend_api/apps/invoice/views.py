@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from apps.core.abstracts import AbstractViewSet
+from apps.core.mixins import FilterByLoggedUserMixin
 from apps.core.permissions import UserPermission
 
 from .models import Invoice
@@ -13,8 +14,8 @@ from .serializers import InvoiceSerializer
 # Create your views here.
 
 
-class InvoiceViewSet(AbstractViewSet):
-    http_method_names = ("post",)
+class InvoiceViewSet(FilterByLoggedUserMixin, AbstractViewSet):
+    http_method_names = ("post", "get", "delete")
     permission_classes = (UserPermission, UserIDBelongToUser)
     serializer_class = InvoiceSerializer
     queryset = Invoice.objects.all()
