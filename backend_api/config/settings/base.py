@@ -20,6 +20,7 @@ CUSTOM_APPS: List[str] = [
     "apps.core.apps.CoreConfig",
     "apps.auth.apps.AuthConfig",
     "apps.user.apps.UserConfig",
+    "apps.invoice.apps.InvoiceConfig",
 ]
 
 THIRD_PARTY_APPS: List[str] = [
@@ -108,3 +109,37 @@ AUTH_USER_MODEL: str = "apps_user.User"
 
 BASE_API_PATH: str = "api"
 APPEND_SLASH: bool = True
+
+####################
+#        AWS settings
+# https://blog.devgenius.io/how-to-configure-a-django-application-with-s3-buckets-for-file-storage-9cea315316a4
+#######################
+USE_S3 = env.bool("USE_S3", False)
+
+if USE_S3:
+    AWS_ACCESS_KEY_ID = env.str("S3_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = env.str("S3_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = env.str("S3_BUCKET_NAME")
+    # AWS_S3_ENDPOINT_URL = env.str("S3_HOST")
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    AWS_S3_OBJECT_PARAMETERS = {
+        "CacheControl": "max-age=86400",
+    }
+    AWS_DEFAULT_ACL = "public-read"
+    # AWS_LOCATION = 'static'
+
+    # STATICFILES_DIRS = [
+    #     'static',
+    # ]
+    # STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+    # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+    # public media settings
+    # PUBLIC_MEDIA_LOCATION = 'media'
+    # MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
+    # DEFAULT_FILE_STORAGE = 'core.storage_backends.PublicMediaStorage'
+else:
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+    MEDIA_URL = "/media"
+    MEDIA_ROOT = BASE_DIR / "media"

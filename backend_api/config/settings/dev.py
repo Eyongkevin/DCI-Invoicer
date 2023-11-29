@@ -3,7 +3,7 @@ from typing import Optional, Tuple, Union
 
 from .base import *
 
-environ.Env.read_env(str(BASE_DIR / ".env"))
+environ.Env.read_env(str(BASE_DIR / ".env.prod"))
 
 SECRET_KEY = env.str("SECRET_KEY")
 
