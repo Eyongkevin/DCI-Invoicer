@@ -2,6 +2,8 @@ from django.db import models
 
 from apps.core.abstracts import AbstractModel, AbstractUserManager
 
+from .validators import validate_file_extension
+
 
 # Create your models here.
 class InvoiceManager(AbstractUserManager):
@@ -14,5 +16,5 @@ class Invoice(AbstractModel):
     )
     size = models.PositiveSmallIntegerField(null=True, blank=True)
     name = models.CharField(max_length=200)
-    invoice_xls = models.FileField(max_length=50)
+    invoice_xls = models.FileField(max_length=50, validators=[validate_file_extension])
     invoice_pdf = models.URLField(null=True, blank=True)

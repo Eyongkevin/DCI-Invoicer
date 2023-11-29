@@ -141,5 +141,5 @@ if USE_S3:
     # DEFAULT_FILE_STORAGE = 'core.storage_backends.PublicMediaStorage'
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    MEDIA_URL = "/media"
+    MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "media"
