@@ -17,7 +17,6 @@ class AbstractManager(models.Manager):
 class AbstractUserManager(AbstractManager):
     def get_object_by_user_id(self, user_id):
         try:
-            breakpoint()
             instance = self.get(user_id__public_id=user_id)
             return instance
         except (ObjectDoesNotExist, ValueError, TypeError) as err:

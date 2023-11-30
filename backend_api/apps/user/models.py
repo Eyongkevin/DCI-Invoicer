@@ -1,5 +1,7 @@
 from typing import NoReturn, Union
 
+from apps.core.abstracts import AbstractManager, AbstractModel, AbstractUserManager
+from apps.core.schemas import UserRoleEnum
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -9,9 +11,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
-
-from apps.core.abstracts import AbstractManager, AbstractModel, AbstractUserManager
-from apps.core.schemas import UserRoleEnum
 
 # Create your models here.
 
@@ -124,7 +123,7 @@ class Profile(AbstractModel):
     objects = ProfileManage()
 
     def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.last_name} {self.first_name}"
 
 
 class AddressManager(AbstractUserManager):
@@ -139,6 +138,8 @@ class Address(AbstractModel):
     city = models.CharField(50)
     country = models.CharField(100)
     address = models.CharField(150)
+
+    objects = AddressManager()
 
     def __str__(self) -> str:
         return self.user_id.username
@@ -156,6 +157,8 @@ class Company(AbstractModel):
     address_1 = models.CharField(100)
     address_2 = models.CharField(100)
 
+    objects = CompanyManager()
+
     def __str__(self):
         return self.name
 
@@ -170,6 +173,8 @@ class Assignment(AbstractModel):
     )
     signed_agreement = models.DateField()
     end_date = models.DateField()
+
+    objects = AssignmentManager()
 
     def __str__(self):
         return f"{self.user_id.username} - {self.end_date}"

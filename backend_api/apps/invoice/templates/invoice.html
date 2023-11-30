@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DCI Invoicer</title>
+    <style>
+      @page {
+        size: a4 portrait;
+        margin: 0mm 0mm 0mm 0mm;
+      }
+      .invoice-box {
+        max-width: 900px;
+        margin: auto;
+        padding: 30px;
+        font-size: 16px;
+        line-height: 24px;
+        font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+        color: #555;
+      }
+      .invoice-box table {
+        width: 100%;
+        line-height: inherit;
+        text-align: left;
+      }
+      .invoice-box table td {
+        padding: 5px;
+        vertical-align: top;
+      }
+      .invoice-box table tr td:nth-child(2) {
+        text-align: right;
+      }
+      .invoice-box table tr.top table td {
+        padding-bottom: 20px;
+      }
+      .invoice-box table tr.top table td.title {
+        font-size: 45px;
+        line-height: 45px;
+        color: #333;
+      }
+      .invoice-box table tr.information table td {
+        padding-bottom: 40px;
+      }
+      .invoice-box table tr.heading td {
+        background: #eee;
+        border-bottom: 1px solid #ddd;
+        font-weight: bold;
+      }
+      .invoice-box table tr.details td {
+        padding-bottom: 20px;
+      }
+      .invoice-box table tr.item td {
+        border-bottom: 1px solid #eee;
+      }
+      .invoice-box table tr.item.last td {
+        border-bottom: none;
+      }
+      .invoice-box table tr.total td:nth-child(2) {
+        border-top: 2px solid #eee;
+        font-weight: bold;
+      }
+      @media only screen and (max-width: 600px) {
+        .invoice-box table tr.top table td {
+          width: 100%;
+          display: block;
+          text-align: center;
+        }
+        .invoice-box table tr.information table td {
+          width: 100%;
+          display: block;
+          text-align: center;
+        }
+      }
+      div.divFooter {
+        bottom: 0;
+        max-width: 100%;
+        padding-top: 50px;
+        padding-left: 65%;
+      }
+      /** RTL **/
+      .rtl {
+        direction: rtl;
+        font-family: Tahoma, "Helvetica Neue", "Helvetica", Helvetica, Arial,
+          sans-serif;
+      }
+      .rtl table {
+        text-align: right;
+      }
+      .rtl table tr td:nth-child(2) {
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="invoice-box">
+      <header-top-right>
+        {{user_info.profile}} | {{user_info.address.address}} |
+        {{user_info.address.po_box}} | {{user_info.address.city}} |
+        {{user_info.address.country.capitalize}}
+      </header-top-right>
+      <table cellpadding="0" cellspacing="0">
+        <tr class="top">
+          <td colspan="2">
+            <table>
+              <tr>
+                <td class="title">
+                  <img
+                    src="https://imgur.com/edx5Sb0.png"
+                    style="height: 100px"
+                  />
+                </td>
+                <td></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr class="information">
+          <td colspan="2">
+            <table>
+              <tr>
+                <td>
+                  {{user_info.company.name}}<br />
+                  {{user_info.company.address_1}}<br />
+                  {{user_info.company.address_2}}
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Invoice</td>
+                <td>
+                  <div>&nbsp;</div>
+                  <b>Invoice number:</b> {{auto_info.invoice_number}} -
+                  {{auto_info.year}}<br />
+                  <b>Period of service:</b> {{auto_info.service_period_start}} –
+                  {{auto_info.service_period_end}}<br />
+                  <b>Date:</b> {{auto_info.generated_date}}<br />
+                  <b>Tax number:</b> {{user_info.profile.tax_number}}<br />
+                  <b>VAT-ID:</b><br />
+                  <b>PO number:</b> {{user_info.profile.po_number}}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <div class="intro">
+        <p>To whom it may concern,</p>
+        <p>
+          I hereby invoice my work for teaching and mentoring. My work is based
+          on the signed framework agreement of 01.08.2023
+        </p>
+      </div>
+      <table cellpadding="0" cellspacing="0">
+        <tr class="heading">
+          <td>Description</td>
+          <td>Date of service</td>
+          <td>Course + Location</td>
+          <td>Hours(UE)</td>
+          <td>Rate per UE</td>
+          <td></td>
+        </tr>
+        {% for i in user_info %}
+        <tr class="item">
+          <td>
+            <ul>
+              <li>Django Templates</li>
+              <li>Custom Filters</li>
+              <li>Template tags and Custom tamplate tags</li>
+            </ul>
+          </td>
+          <td>07.09.2023</td>
+          <td>FbW P23E01</td>
+          <td>8</td>
+          <td>20</td>
+          <td>160,00</td>
+        </tr>
+        {% endfor %}
+        <!-- <tr class="item">
+          <td>Hosting (3 months)</td>
+          <td>$75.00</td>
+        </tr>
+        <tr class="item last">
+          <td>Domain name (1 year)</td>
+          <td>$10.00</td>
+        </tr>
+        <tr class="total">
+          <td></td>
+          <td>Total: $385.00</td>
+        </tr> -->
+      </table>
+      <footer>
+        <div class="divFooter">
+          <b>Bankname:</b> {{user_info.profile.bank_name}}<br />
+          <b>IBAN:</b> {{user_info.profile.iban}}<br />
+          <b>SWIFT-BIC:</b> {{user_info.profile.swift_bic}}<br />
+          <b>Steuernummer:</b> {{user_info.profile.tax_number}}<br />
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -12,4 +12,4 @@ class InvoiceConfig(AppConfig):
     def ready(self) -> None:
         from . import signals
 
-        request_finished.connect(signals.delete_file_on_s3)
+        # request_finished.connect(signals.delete_file_on_s3)
