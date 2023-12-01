@@ -1,6 +1,10 @@
+import io
 from collections import namedtuple
 from datetime import datetime
+from typing import List, Tuple
 
+import boto3
+import openpyxl
 from apps.core.abstracts import AbstractViewSet
 from apps.core.mixins import FilterByLoggedUserMixin
 from apps.core.permissions import UserPermission
@@ -67,10 +71,46 @@ def pdf_generate(request, public_id=None):
             generated_date,
         )
 
+    def get_sheet_info(public_id) -> Tuple[List[List[str]], int]:
+        invoice = Invoice.objects.get_object_by_public_id(public_id)
+        s3 = boto3.client(
+            "s3",
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        )
+        s3_data = s3.get_object(
+            Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=invoice.invoice_xls.name
+        )
+        contents = s3_data["Body"].read()
+        wb = openpyxl.load_workbook(filename=(io.BytesIO(contents)), data_only=True)
+        sheet = wb[wb.sheetnames[0]]
+
+        sheet_info = []
+        sum_net = 0
+        for row in range(1, sheet.max_row + 1):
+            sheet_data = []
+            for col in range(1, sheet.max_column + 1):
+                if col == 1:
+                    if sheet.cell(column=col, row=row).value == "t":
+                        sum_net += 20 * 8
+                    else:
+                        sum_net += 20 * 4
+                sheet_data.append(sheet.cell(column=col, row=row).value)
+
+            sheet_info.append(sheet_data)
+
+        return sheet_info, sum_net
+
     if request.method == "GET":
         user_info = get_user_info(request)
         auto_info = get_auto_info()
-        context = {"user_info": user_info, "auto_info": auto_info}
+        sheet_info, sum_net = get_sheet_info(public_id)
+        context = {
+            "user_info": user_info,
+            "auto_info": auto_info,
+            "sheet_info": sheet_info,
+            "sum_info": {"sum_net": sum_net, "rate_per_eu": 20},
+        }
         template = get_template("invoice.html")
         rendered = template.render(context)
         html = HTML(string=rendered)
@@ -79,6 +119,4 @@ def pdf_generate(request, public_id=None):
         # build response
         response = HttpResponse(pd_file, content_type="application/pdf")
         response["Content-Disposition"] = 'attachment; filename="invoice.pdf"'
-        return response
-        return response
         return response

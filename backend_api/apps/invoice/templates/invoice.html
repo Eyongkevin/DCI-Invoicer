@@ -1,4 +1,4 @@
-{% load static %}
+{% load static %} {% load clean_text_filter %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -14,8 +14,8 @@
         max-width: 900px;
         margin: auto;
         padding: 30px;
-        font-size: 16px;
-        line-height: 24px;
+        font-size: 12px;
+        line-height: 20px;
         font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
         color: #555;
       }
@@ -23,6 +23,7 @@
         width: 100%;
         line-height: inherit;
         text-align: left;
+        empty-cells: show;
       }
       .invoice-box table td {
         padding: 5px;
@@ -58,6 +59,18 @@
       }
       .invoice-box table tr.total td:nth-child(2) {
         border-top: 2px solid #eee;
+        font-weight: bold;
+      }
+      .invoice-box table tr:nth-child(even) {
+        background: #fcfcfc;
+      }
+      .task-number {
+        font-weight: bold;
+      }
+      .item td:first-child {
+        width: 40%;
+      }
+      .embed td {
         font-weight: bold;
       }
       @media only screen and (max-width: 600px) {
@@ -106,7 +119,7 @@
               <tr>
                 <td class="title">
                   <img
-                    src="https://imgur.com/edx5Sb0.png"
+                    src="https://digitalcareerinstitute.org/wp-content/uploads/2022/04/DCI_COLORS_June24_logo_wordmark_blue.svg"
                     style="height: 100px"
                   />
                 </td>
@@ -161,22 +174,70 @@
           <td>Rate per UE</td>
           <td></td>
         </tr>
-        {% for i in user_info %}
+        {% for task in sheet_info %}
         <tr class="item">
           <td>
+            <div class="task-number">
+              Task {{ forloop.counter }} -
+              <!---->
+              {% if task.0 == "t" %} Teaching {% else %} Mentoring {% endif %}
+            </div>
             <ul>
-              <li>Django Templates</li>
-              <li>Custom Filters</li>
-              <li>Template tags and Custom tamplate tags</li>
+              <li>{{ task.4|remove_dash }}</li>
             </ul>
           </td>
-          <td>07.09.2023</td>
-          <td>FbW P23E01</td>
-          <td>8</td>
+          <td>{{ task.2|date:"d.M.Y"}}</td>
+          <td>
+            {% if task.0 == "t" %}FbW P23E01{% else %} {{ task.1 }} {% endif %}
+          </td>
+          <td>{% if task.0 == "t" %} 8 {% else %} 4 {% endif %}</td>
           <td>20</td>
-          <td>160,00</td>
+          <td>{% if task.0 == "t" %} 160,00 € {% else %} 80 € {% endif %}</td>
         </tr>
         {% endfor %}
+        <tr class="item">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td colspan="2">
+            <table>
+              <tr class="total">
+                <td>Sum (net)</td>
+                <td>{{ sum_info.sum_net }},00 €</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr class="item">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td colspan="2">
+            <table>
+              <tr class="total">
+                <td>VAT (0%)*</td>
+                <td>0,00 €</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr class="item">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td colspan="2">
+            <table>
+              <tr class="total">
+                <td>Sum (gross)</td>
+                <td>{{ sum_info.sum_net }},00 €</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
         <!-- <tr class="item">
           <td>Hosting (3 months)</td>
           <td>$75.00</td>
