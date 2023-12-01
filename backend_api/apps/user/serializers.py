@@ -1,10 +1,9 @@
 from typing import Dict, NoReturn, Tuple, Union
 
-from rest_framework import serializers
-
 from apps.core.abstracts import AbstractSerializer
 from apps.core.exceptions import UserMismatchPasswordsEx
 from apps.core.schemas import UserRoleEnum
+from rest_framework import serializers
 
 from .models import Address, Assignment, Company, Profile, User
 
@@ -74,6 +73,8 @@ class ProfileSerializer(AbstractSerializer):
             "iban",
             "first_name",
             "last_name",
+            "swift_bic",
+            "class_room",
             "transfer_deadline_day",
             "created",
             "updated",

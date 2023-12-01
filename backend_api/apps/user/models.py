@@ -119,6 +119,10 @@ class Profile(AbstractModel):
     first_name = models.CharField(50, null=True, blank=True)
     last_name = models.CharField(50, null=True, blank=True)
     transfer_deadline_day = models.PositiveSmallIntegerField(null=True, blank=True)
+    rate_per_ue = models.PositiveSmallIntegerField(default=20)
+    ue_hours = models.PositiveSmallIntegerField(default=8)
+    vat_cost = models.PositiveSmallIntegerField(default=0)
+    class_room = models.CharField(10, default="")
 
     objects = ProfileManage()
 

@@ -141,13 +141,14 @@
                 <td></td>
               </tr>
               <tr>
-                <td>Invoice</td>
+                <td><b>Invoice</b></td>
                 <td>
                   <div>&nbsp;</div>
                   <b>Invoice number:</b> {{auto_info.invoice_number}} -
                   {{auto_info.year}}<br />
-                  <b>Period of service:</b> {{auto_info.service_period_start}} –
-                  {{auto_info.service_period_end}}<br />
+                  <b>Period of service:</b>
+                  {{auto_info.service_period_start|date:"d/m/Y"}} –
+                  {{auto_info.service_period_end|date:"d/m/Y"}}<br />
                   <b>Date:</b> {{auto_info.generated_date}}<br />
                   <b>Tax number:</b> {{user_info.profile.tax_number}}<br />
                   <b>VAT-ID:</b><br />
@@ -188,7 +189,11 @@
           </td>
           <td>{{ task.2|date:"d.M.Y"}}</td>
           <td>
-            {% if task.0 == "t" %}FbW P23E01{% else %} {{ task.1 }} {% endif %}
+            {% if task.0 == "t" %}
+            <!---->
+            {{user_info.profile.class_room}}{% else %}{{ task.1 }}
+            <!---->
+            {% endif %}
           </td>
           <td>{% if task.0 == "t" %} 8 {% else %} 4 {% endif %}</td>
           <td>20</td>
@@ -251,6 +256,18 @@
           <td>Total: $385.00</td>
         </tr> -->
       </table>
+      <div>
+        *Umsatzsteuerfreie Leistung für Schulungs- und Bildungszwecke gem. § 4
+        Nr. 21 UStG
+      </div>
+      <br />
+      <div>
+        Please transfer the amount detailed above to the following bank account
+        by {{auto_info.transfer_deadline_date|date:"d/m/Y"}}:<br />
+        Eyong Kevin Enowanyo<br />
+        CM21 10033 05212 12002006853 24<br />
+        UNAFCMCX<br />
+      </div>
       <footer>
         <div class="divFooter">
           <b>Bankname:</b> {{user_info.profile.bank_name}}<br />

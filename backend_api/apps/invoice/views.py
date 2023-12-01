@@ -1,3 +1,4 @@
+import calendar
 import io
 from collections import namedtuple
 from datetime import datetime
@@ -40,7 +41,7 @@ class InvoiceViewSet(FilterByLoggedUserMixin, AbstractViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 def pdf_generate(request, public_id=None):
     def get_user_info(request):
         user_id = str(request.user.public_id)
@@ -52,23 +53,34 @@ def pdf_generate(request, public_id=None):
         UserInfo = namedtuple("UserInfo", "profile address company assignment")
         return UserInfo(profile, address, company, assignment)
 
-    def get_auto_info():
-        current_year = datetime.now().year
-        invoice_number = "009"
-        service_period_start = "01/09/2023"
-        service_period_end = "30/09/2023"
+    def get_auto_info(
+        transfer_deadline_day: int,
+        invoice_number: str,
+        service_month: int,
+        service_year: int = datetime.now().year,
+    ):
+        invoice_number = invoice_number
+        _, service_period_last = calendar.monthrange(service_year, service_month)
+        service_period_start = datetime(service_year, service_month, 1)  # "01/09/2023"
+        service_period_end = datetime(
+            service_year, service_month, service_period_last
+        )  # "30/09/2023"
         generated_date = datetime.now().date().strftime("%d. %h %Y")
+        transfer_deadline_date = (
+            datetime.now().date().replace(day=transfer_deadline_day)
+        )
 
         AutoInfo = namedtuple(
             "AutoInfo",
-            "year invoice_number service_period_start service_period_end generated_date",
+            "year invoice_number service_period_start service_period_end generated_date transfer_deadline_date",
         )
         return AutoInfo(
-            current_year,
+            service_year,
             invoice_number,
             service_period_start,
             service_period_end,
             generated_date,
+            transfer_deadline_date,
         )
 
     def get_sheet_info(public_id) -> Tuple[List[List[str]], int]:
@@ -101,22 +113,27 @@ def pdf_generate(request, public_id=None):
 
         return sheet_info, sum_net
 
-    if request.method == "GET":
-        user_info = get_user_info(request)
-        auto_info = get_auto_info()
-        sheet_info, sum_net = get_sheet_info(public_id)
-        context = {
-            "user_info": user_info,
-            "auto_info": auto_info,
-            "sheet_info": sheet_info,
-            "sum_info": {"sum_net": sum_net, "rate_per_eu": 20},
-        }
-        template = get_template("invoice.html")
-        rendered = template.render(context)
-        html = HTML(string=rendered)
-        pd_file = html.write_pdf()
+    # if request.method == "POST":
+    user_info = get_user_info(request)
+    auto_info = get_auto_info(
+        user_info.profile.transfer_deadline_day,
+        request.data.get("invoice_number"),
+        request.data.get("service_month"),
+        request.data.get("service_year"),
+    )
+    sheet_info, sum_net = get_sheet_info(public_id)
+    context = {
+        "user_info": user_info,
+        "auto_info": auto_info,
+        "sheet_info": sheet_info,
+        "sum_info": {"sum_net": sum_net, "rate_per_eu": 20},
+    }
+    template = get_template("invoice.html")
+    rendered = template.render(context)
+    html = HTML(string=rendered)
+    pd_file = html.write_pdf()
 
-        # build response
-        response = HttpResponse(pd_file, content_type="application/pdf")
-        response["Content-Disposition"] = 'attachment; filename="invoice.pdf"'
-        return response
+    # build response
+    response = HttpResponse(pd_file, content_type="application/pdf")
+    response["Content-Disposition"] = 'attachment; filename="invoice.pdf"'
+    return response
