@@ -10,3 +10,7 @@ dev-shellplus:
 	python3 manage.py shell_plus --settings=config.settings.dev
 dev-install:
 	pip install -r requirements/dev.txt
+test-install:
+	pip install -r requirements/test.txt
+test:
+	python3 -m pytest $(k)

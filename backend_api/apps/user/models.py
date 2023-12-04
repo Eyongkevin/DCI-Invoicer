@@ -30,11 +30,12 @@ class UserManager(BaseUserManager, AbstractManager):
             raise TypeError("User must have an email")
         if password is None:
             raise TypeError("User must have a password")
+        #! comparing a string to an enum type will raise a TypeError exception in python 3.11 and lower
+        #! as from python 3.12, this will return a True or False.
+        #! That's why I have it wrap in an exception handler so that it will work when upgraded.
         try:
             if not role in UserRoleEnum:
-                raise ValueError(
-                    "User must have a valid role: 'user', 'admin', 'superuser'"
-                )
+                raise TypeError
         except TypeError as err:
             raise TypeError("User role must be of the instance 'UserRoleEnum'") from err
 
@@ -127,7 +128,7 @@ class Profile(AbstractModel):
     objects = ProfileManage()
 
     def __str__(self) -> str:
-        return f"{self.last_name} {self.first_name}"
+        return f"{self.last_name} {self.first_name}".title()
 
 
 class AddressManager(AbstractUserManager):
