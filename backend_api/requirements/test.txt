@@ -1,2 +1,3 @@
 -r dev.txt
 pytest-django==4.7.0
+mock==5.1.0
