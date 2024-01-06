@@ -190,7 +190,7 @@
           </td>
           <td>{{ task.2|date:"d.M.Y"}}</td>
           <td>
-            {% if task.0 == "t" %}
+            {% if not task.1 %}
             <!---->
             {{user_info.profile.class_room}}{% else %}{{ task.1 }}
             <!---->

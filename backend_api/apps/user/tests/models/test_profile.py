@@ -1,4 +1,5 @@
 import pytest
+
 from apps.core.fixtures import user
 from apps.user.models import Profile
 
@@ -23,4 +24,11 @@ def test_create_profile(user):
 
     assert profile.user_id.public_id.hex == user.public_id.hex
     assert data_profile["tax_number"] == profile.tax_number
-    assert str(profile) == f"{data_profile['last_name']} {data_profile['first_name']}"
+    assert (
+        str(profile)
+        == f"{data_profile['last_name']} {data_profile['first_name']}".title()
+    )
+    assert (
+        str(profile)
+        == f"{data_profile['last_name']} {data_profile['first_name']}".title()
+    )
