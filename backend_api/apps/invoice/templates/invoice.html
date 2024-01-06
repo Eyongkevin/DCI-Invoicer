@@ -1,4 +1,4 @@
-{% load static %} {% load clean_text_filter %}
+{% load static %} {% load clean_text_filter %} {% load inclusion_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -184,9 +184,7 @@
               <!---->
               {% if task.0 == "t" %} Teaching {% else %} Mentoring {% endif %}
             </div>
-            <ul>
-              <li>{{ task.4|remove_dash }}</li>
-            </ul>
+            {% task_list task.4 %}
           </td>
           <td>{{ task.2|date:"d.M.Y"}}</td>
           <td>

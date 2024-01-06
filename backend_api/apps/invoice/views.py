@@ -6,10 +6,6 @@ from typing import List, Tuple
 
 import boto3
 import openpyxl
-from apps.core.abstracts import AbstractViewSet
-from apps.core.mixins import FilterByLoggedUserMixin
-from apps.core.permissions import UserPermission
-from apps.user import models as UserModels
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -19,6 +15,11 @@ from rest_framework import status
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from weasyprint import HTML
+
+from apps.core.abstracts import AbstractViewSet
+from apps.core.mixins import FilterByLoggedUserMixin
+from apps.core.permissions import UserPermission
+from apps.user import models as UserModels
 
 from .models import Invoice
 from .permissions import UserIDBelongToUser
@@ -122,6 +123,7 @@ def pdf_generate(request, public_id=None):
         request.data.get("service_year"),
     )
     sheet_info, sum_net = get_sheet_info(public_id)
+    # breakpoint()
     context = {
         "user_info": user_info,
         "auto_info": auto_info,
