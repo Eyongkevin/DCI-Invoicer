@@ -1,5 +1,10 @@
+{% load clean_text_filter %}
 <ul>
-  {% for task in tasks %}
+  {% for task in tasks %} {% if task|is_nested %}
+  <ul>
+    <li>{{ task|remove_dash }}</li>
+  </ul>
+  {% else %}
   <li>{{ task }}</li>
-  {% endfor %}
+  {% endif %} {% endfor %}
 </ul>
