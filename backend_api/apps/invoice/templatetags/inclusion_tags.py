@@ -6,7 +6,9 @@ register = template.Library()
 
 
 @register.inclusion_tag("task_list.html")
-def task_list(task: str) -> Dict[str, List[str]]:
+def task_list(task: str | None) -> Dict[str, List[str]]:
+    if task is None:
+        return {"tasks": []}
     tasks: List[str] = task.split("\n")
     tasks = [value.strip("-").strip() for value in tasks]
     return {"tasks": tasks}
